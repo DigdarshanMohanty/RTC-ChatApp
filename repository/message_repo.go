@@ -12,6 +12,7 @@ import (
 type MessageRepository interface {
 	Save(msg *models.Message) (*models.Message, error)
 	ListByRoom(roomID int, limit int) ([]models.Message, error)
+	DeleteByRoom(roomID int) error
 }
 
 type InMemoryMessageRepo struct {
@@ -64,4 +65,25 @@ func (r *InMemoryMessageRepo) ListByRoom(roomID int, limit int) ([]models.Messag
 		msgs = msgs[len(msgs)-limit:]
 	}
 	return msgs, nil
+}
+
+func (r *InMemoryMessageRepo) DeleteByRoom(roomID int) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	// Get all message IDs for this room
+	messageIDs, exists := r.byR[roomID]
+	if !exists {
+		return nil // No messages to delete
+	}
+
+	// Delete all messages from the data map
+	for _, messageID := range messageIDs {
+		delete(r.data, messageID)
+	}
+
+	// Remove the room from the byR map
+	delete(r.byR, roomID)
+
+	return nil
 }

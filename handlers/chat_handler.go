@@ -54,7 +54,16 @@ func (h *ChatHandler) Rooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rooms, err := h.chatSvc.ListRooms()
+	// Get user ID from header
+	userIDStr := r.Header.Get("X-User-ID")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		respondWithError(w, "Invalid user", "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	// Get accessible rooms for this user
+	rooms, err := h.chatSvc.ListAccessibleRooms(userID)
 	if err != nil {
 		respondWithError(w, "Internal error", "Failed to list rooms", http.StatusInternalServerError)
 		return
@@ -71,7 +80,8 @@ func (h *ChatHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Name string `json:"name"`
+		Name      string `json:"name"`
+		IsPrivate bool   `json:"is_private"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -84,9 +94,93 @@ func (h *ChatHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	room, err := h.chatSvc.CreateRoom(req.Name)
+	// Get user ID from header
+	userIDStr := r.Header.Get("X-User-ID")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		respondWithError(w, "Invalid user", "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	room, err := h.chatSvc.CreateRoom(req.Name, req.IsPrivate, userID)
 	if err != nil {
 		respondWithError(w, "Room creation failed", err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	respondWithSuccess(w, room)
+}
+
+// Delete a chat room
+func (h *ChatHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		respondWithError(w, "Method not allowed", "Use DELETE method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	roomIDStr := r.URL.Query().Get("id")
+	if roomIDStr == "" {
+		respondWithError(w, "Missing parameter", "Room id is required", http.StatusBadRequest)
+		return
+	}
+
+	roomID, err := strconv.Atoi(roomIDStr)
+	if err != nil {
+		respondWithError(w, "Invalid parameter", "Room id must be a valid number", http.StatusBadRequest)
+		return
+	}
+
+	// Get user ID from header
+	userIDStr := r.Header.Get("X-User-ID")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		respondWithError(w, "Invalid user", "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.chatSvc.DeleteRoom(roomID, userID); err != nil {
+		respondWithError(w, "Room deletion failed", err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Disconnect all clients from the deleted room
+	h.hub.DisconnectRoom(roomID)
+
+	respondWithSuccess(w, map[string]string{"message": "Room deleted successfully"})
+}
+
+// Join room via invite code
+func (h *ChatHandler) JoinViaInvite(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		respondWithError(w, "Method not allowed", "Use POST method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		InviteCode string `json:"invite_code"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, "Invalid JSON", "Bad request format", http.StatusBadRequest)
+		return
+	}
+
+	if req.InviteCode == "" {
+		respondWithError(w, "Missing invite code", "Invite code is required", http.StatusBadRequest)
+		return
+	}
+
+	// Get user ID from header
+	userIDStr := r.Header.Get("X-User-ID")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		respondWithError(w, "Invalid user", "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	room, err := h.chatSvc.JoinRoomByInvite(req.InviteCode, userID)
+	if err != nil {
+		respondWithError(w, "Join failed", err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -126,6 +220,20 @@ func (h *ChatHandler) WS(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("WebSocket connection rejected: invalid roomId '%s' - %v", roomIDStr, err)
 		respondWithError(w, "Invalid parameter", "roomId must be a valid number", http.StatusBadRequest)
+		return
+	}
+
+	// Check if user can access this room
+	canAccess, err := h.chatSvc.CanUserAccessRoom(roomID, uid)
+	if err != nil {
+		log.Printf("WebSocket connection rejected: error checking room access - %v", err)
+		respondWithError(w, "Access error", "Failed to verify room access", http.StatusInternalServerError)
+		return
+	}
+
+	if !canAccess {
+		log.Printf("WebSocket connection rejected: user %s (ID: %d) cannot access room %d", uname, uid, roomID)
+		respondWithError(w, "Access denied", "You don't have access to this room", http.StatusForbidden)
 		return
 	}
 

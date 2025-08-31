@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"chat-backend/services"
@@ -24,7 +25,11 @@ type SuccessResponse struct {
 }
 
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
+	// Debug: log the actual method received
+	log.Printf("Register endpoint received method: %s, URL: %s", r.Method, r.URL.String())
+
 	if r.Method != http.MethodPost {
+		log.Printf("Method mismatch: expected POST, got %s", r.Method)
 		respondWithError(w, "Method not allowed", "Use POST method", http.StatusMethodNotAllowed)
 		return
 	}
@@ -65,7 +70,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+	// Debug: log the actual method received
+	log.Printf("Login endpoint received method: %s, URL: %s", r.Method, r.URL.String())
+
 	if r.Method != http.MethodPost {
+		log.Printf("Method mismatch: expected POST, got %s", r.Method)
 		respondWithError(w, "Method not allowed", "Use POST method", http.StatusMethodNotAllowed)
 		return
 	}

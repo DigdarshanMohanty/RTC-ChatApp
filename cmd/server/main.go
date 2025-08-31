@@ -59,9 +59,10 @@ func main() {
 	userRepo := repository.NewInMemoryUserRepo()
 	messageRepo := repository.NewInMemoryMessageRepo()
 	chatRepo := repository.NewInMemoryChatRepo()
+	membershipRepo := repository.NewInMemoryMembershipRepo()
 
 	// --- create default room ---
-	defaultRoom, err := chatRepo.Create("General")
+	defaultRoom, err := chatRepo.Create("General", false, 0) // System created room
 	if err != nil {
 		log.Printf("Warning: could not create default room: %v", err)
 	} else {
@@ -75,7 +76,7 @@ func main() {
 	// --- services ---
 	authSvc := services.NewAuthService(userRepo, &cfg)
 	msgSvc := services.NewMessageService(messageRepo, chatRepo, userRepo, hub, &cfg)
-	chatSvc := services.NewChatService(chatRepo, userRepo)
+	chatSvc := services.NewChatService(chatRepo, userRepo, messageRepo, membershipRepo)
 
 	// --- handlers ---
 	authH := handlers.NewAuthHandler(authSvc)
@@ -91,13 +92,22 @@ func main() {
 		w.Write([]byte(`{"status":"ok","timestamp":"` + time.Now().Format(time.RFC3339) + `"}`))
 	})
 
-	// API routes
+	// API routes - handle both with and without trailing slashes
 	mux.HandleFunc("/api/register", authH.Register)
+	mux.HandleFunc("/api/register/", authH.Register)
 	mux.HandleFunc("/api/login", authH.Login)
-	mux.HandleFunc("/api/rooms", chatH.WithAuth(chatH.Rooms))         // GET list rooms
-	mux.HandleFunc("/api/rooms/create", chatH.WithAuth(chatH.Create)) // POST create room
-	mux.HandleFunc("/api/messages", msgH.WithAuth(msgH.ListMessages)) // GET ?roomId=1
-	mux.HandleFunc("/ws", chatH.WS)                                   // WS ?roomId=1&token=<token>
+	mux.HandleFunc("/api/login/", authH.Login)
+	mux.HandleFunc("/api/rooms", chatH.WithAuth(chatH.Rooms))               // GET list rooms
+	mux.HandleFunc("/api/rooms/", chatH.WithAuth(chatH.Rooms))              // GET list rooms
+	mux.HandleFunc("/api/rooms/create", chatH.WithAuth(chatH.Create))       // POST create room
+	mux.HandleFunc("/api/rooms/create/", chatH.WithAuth(chatH.Create))      // POST create room
+	mux.HandleFunc("/api/rooms/delete", chatH.WithAuth(chatH.Delete))       // DELETE delete room
+	mux.HandleFunc("/api/rooms/delete/", chatH.WithAuth(chatH.Delete))      // DELETE delete room
+	mux.HandleFunc("/api/rooms/join", chatH.WithAuth(chatH.JoinViaInvite))  // POST join room via invite
+	mux.HandleFunc("/api/rooms/join/", chatH.WithAuth(chatH.JoinViaInvite)) // POST join room via invite
+	mux.HandleFunc("/api/messages", msgH.WithAuth(msgH.ListMessages))       // GET ?roomId=1
+	mux.HandleFunc("/api/messages/", msgH.WithAuth(msgH.ListMessages))      // GET ?roomId=1
+	mux.HandleFunc("/ws", chatH.WS)                                         // WS ?roomId=1&token=<token>
 
 	// Apply middleware
 	handler := withCORS(loggingMiddleware(mux))

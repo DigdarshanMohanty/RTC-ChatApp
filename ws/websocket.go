@@ -261,3 +261,20 @@ func (h *Hub) GetUserCount(roomID int) int {
 	}
 	return 0
 }
+
+// DisconnectRoom disconnects all clients from a specific room
+func (h *Hub) DisconnectRoom(roomID int) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	if clients, exists := h.rooms[roomID]; exists {
+		// Close all client connections in this room
+		for client := range clients {
+			close(client.send)
+			client.conn.Close()
+		}
+		// Remove the room from the hub
+		delete(h.rooms, roomID)
+		log.Printf("Disconnected all clients from room %d due to room deletion", roomID)
+	}
+}
