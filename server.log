@@ -1,0 +1,85 @@
+2025/08/30 08:32:14 Starting chat server on port 8081
+2025/08/30 08:32:14 Created default room: General (ID: 1)
+2025/08/30 08:32:14 Chat server running on http://localhost:8081
+2025/08/30 08:32:14 WS endpoint: ws://localhost:8081/ws?roomId=<id>
+2025/08/30 08:32:14 Default room ID: 1
+2025/08/30 08:32:21 Started POST /api/register
+2025/08/30 08:32:21 Completed POST /api/register in 86.499958ms
+2025/08/30 08:33:36 Started POST /api/login
+2025/08/30 08:33:36 Completed POST /api/login in 64.897666ms
+2025/08/30 08:34:25 Started POST /api/register
+2025/08/30 08:34:25 Completed POST /api/register in 227.125µs
+2025/08/30 08:34:28 Started POST /api/rooms
+2025/08/30 08:34:28 Completed POST /api/rooms in 140.166µs
+2025/08/30 08:34:32 Started GET /api/rooms
+2025/08/30 08:34:32 Completed GET /api/rooms in 197.417µs
+2025/08/30 08:34:45 Started GET /api/rooms/create
+2025/08/30 08:34:45 Completed GET /api/rooms/create in 141.625µs
+2025/08/30 08:34:49 Started POST /api/rooms/create
+2025/08/30 08:34:49 Completed POST /api/rooms/create in 136.125µs
+2025/08/30 08:36:37 Started POST /api/rooms/create
+2025/08/30 08:36:37 Completed POST /api/rooms/create in 168.875µs
+2025/08/30 08:36:50 Started POST /api/rooms/create
+2025/08/30 08:36:50 Completed POST /api/rooms/create in 157.917µs
+2025/08/30 08:37:34 Started POST /api/rooms/create
+2025/08/30 08:37:34 Completed POST /api/rooms/create in 108.583µs
+2025/08/30 08:38:25 Started POST /api/rooms
+2025/08/30 08:38:25 Completed POST /api/rooms in 156.042µs
+2025/08/30 08:38:28 Started GET /api/rooms
+2025/08/30 08:38:28 Completed GET /api/rooms in 173.459µs
+2025/08/30 08:38:50 Started GET /api/rooms/create
+2025/08/30 08:38:50 Completed GET /api/rooms/create in 121.625µs
+2025/08/30 08:38:53 Started POST /api/rooms/create
+2025/08/30 08:38:53 Completed POST /api/rooms/create in 150.209µs
+2025/08/30 08:39:31 Started POST /api/rooms/create
+2025/08/30 08:39:31 Completed POST /api/rooms/create in 224µs
+2025/08/30 08:39:36 Started POST /api/rooms
+2025/08/30 08:39:36 Completed POST /api/rooms in 137.875µs
+2025/08/30 08:39:40 Started GET /api/rooms
+2025/08/30 08:39:40 Completed GET /api/rooms in 146.667µs
+2025/08/30 08:40:18 Started GET /api/messages
+2025/08/30 08:40:18 Completed GET /api/messages in 217.334µs
+2025/08/30 08:40:44 Started GET /health
+2025/08/30 08:40:44 Completed GET /health in 96.209µs
+2025/08/30 09:01:14 Started GET /ws
+2025/08/30 09:01:14 Completed GET /ws in 541.791µs
+2025/08/30 09:01:41 Started GET /ws
+2025/08/30 09:01:41 Completed GET /ws in 526.708µs
+2025/08/30 09:03:25 Started POST /api/register
+2025/08/30 09:03:25 Completed POST /api/register in 64.401417ms
+2025/08/30 09:05:21 Started GET /health
+2025/08/30 09:05:21 Completed GET /health in 1.295584ms
+2025/08/30 09:05:37 Started GET /api/login
+2025/08/30 09:05:37 Completed GET /api/login in 850.334µs
+2025/08/30 09:05:42 Started POST /api/login
+2025/08/30 09:05:42 Completed POST /api/login in 106µs
+2025/08/30 09:06:41 Started POST /api/login
+2025/08/30 09:06:41 Completed POST /api/login in 64.26025ms
+2025/08/30 09:06:50 Started POST /api/rooms
+2025/08/30 09:06:50 Completed POST /api/rooms in 405.25µs
+2025/08/30 09:07:11 Started POST /api/rooms
+2025/08/30 09:07:11 Completed POST /api/rooms in 179.041µs
+2025/08/30 09:07:16 Started GET /api/rooms
+2025/08/30 09:07:16 Completed GET /api/rooms in 226.459µs
+2025/08/30 09:07:51 Started GET /api/rooms/create
+2025/08/30 09:07:51 Completed GET /api/rooms/create in 114.958µs
+2025/08/30 09:07:54 Started POST /api/rooms/create
+2025/08/30 09:07:54 Completed POST /api/rooms/create in 163.792µs
+2025/08/30 09:08:29 Started POST /api/rooms/create
+2025/08/30 09:08:29 Completed POST /api/rooms/create in 157.584µs
+2025/08/30 09:08:34 Started POST /api/rooms
+2025/08/30 09:08:34 Completed POST /api/rooms in 138.667µs
+2025/08/30 09:08:37 Started GET /api/rooms
+2025/08/30 09:08:37 Completed GET /api/rooms in 181.375µs
+2025/08/30 09:08:49 Started GET /api/messages
+2025/08/30 09:08:49 Completed GET /api/messages in 139.25µs
+2025/08/30 09:09:03 Started GET /api/messages
+2025/08/30 09:09:03 Completed GET /api/messages in 1.324333ms
+2025/08/30 09:09:58 Started GET /ws
+2025/08/30 09:09:58 Completed GET /ws in 88.458µs
+2025/08/30 09:10:26 Started GET /ws
+2025/08/30 09:10:26 Completed GET /ws in 160.042µs
+2025/08/30 09:11:01 Started GET /ws
+2025/08/30 09:11:01 Completed GET /ws in 433.584µs
+2025/08/30 09:11:10 Started GET /api/messages
+2025/08/30 09:11:10 Completed GET /api/messages in 492.458µs
