@@ -62,7 +62,7 @@ func main() {
 	membershipRepo := repository.NewInMemoryMembershipRepo()
 
 	// --- create default room ---
-	defaultRoom, err := chatRepo.Create("General", false, 0) // System created room
+	defaultRoom, err := chatRepo.Create("General", true, 0) // System created room
 	if err != nil {
 		log.Printf("Warning: could not create default room: %v", err)
 	} else {
